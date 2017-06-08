@@ -4495,7 +4495,15 @@ SVG.Image = SVG.invent({
         }
       })
 
-      return this.attr('href', (img.src = this.src = url), SVG.xlink)
+      try {
+        var href = this.node.getAttributeNodeNS(SVG.xlink, "href");
+        href.value = (img.src = this.src = url);
+        this.node.setAttributeNodeNS(href);
+        return this.node;
+      }
+      catch (e) {
+        return this.attr('href', (img.src = this.src = url), SVG.xlink);
+      }
     }
     // Add loaded callback
   , loaded: function(loaded) {
@@ -5546,4 +5554,4 @@ if (typeof window.CustomEvent !== 'function') {
 
 return SVG
 
-}));
+}));

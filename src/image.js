@@ -13,13 +13,13 @@ SVG.Image = SVG.invent({
 
       var self = this
         , img  = new window.Image()
-      
+
       // preload image
       SVG.on(img, 'load', function() {
         var p = self.parent(SVG.Pattern)
 
         if(p === null) return
-        
+
         // ensure image size
         if (self.width() == 0 && self.height() == 0)
           self.size(img.width, img.height)
@@ -27,7 +27,7 @@ SVG.Image = SVG.invent({
         // ensure pattern size if not set
         if (p && p.width() == 0 && p.height() == 0)
           p.size(self.width(), self.height())
-        
+
         // callback
         if (typeof self._loaded === 'function')
           self._loaded.call(self, {
@@ -44,7 +44,15 @@ SVG.Image = SVG.invent({
         }
       })
 
-      return this.attr('href', (img.src = this.src = url), SVG.xlink)
+      try {
+        var href = this.node.getAttributeNodeNS(SVG.xlink, "href");
+        href.value = (img.src = this.src = url);
+        this.node.setAttributeNodeNS(href);
+        return this.node;
+      }
+      catch (e) {
+        return this.attr('href', (img.src = this.src = url), SVG.xlink);
+      }
     }
     // Add loaded callback
   , loaded: function(loaded) {
@@ -57,7 +65,7 @@ SVG.Image = SVG.invent({
       return this
     }
   }
-  
+
   // Add parent method
 , construct: {
     // create image element, load image and set its size
